@@ -33,9 +33,32 @@ export default function App() {
     }
   };
 
-  const onSubmitSatisfaction = (data) => {
-    console.log(data);
-    // Handle satisfaction data submission
+
+  const onSubmitSatisfaction = async (data) => {
+    try {
+      setIsLoading(true); // Set loading state to true
+      const jsonString = JSON.stringify(data);
+      const url = `http://152.67.42.101:4008/listamatriculas?matricula=${jsonString}`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const responseData = await response.json();
+      // Do something with the response data
+      console.log(responseData)
+
+      const dataArray = responseData.split(',').reverse();
+      setDisciplinas(dataArray);
+
+      // After successfully submitting matricula, move to the next question
+      setCurrentQuestion(currentQuestion + 1);
+    } catch (error) {
+      // Handle error
+    } finally {
+      setIsLoading(false); // Set loading state to false regardless of success or error
+    }
   };
 
 
@@ -309,11 +332,11 @@ export default function App() {
 
             <div className="Botoes">
             {currentQuestion !== 1 && (
-              <button onClick={() => setCurrentQuestion(currentQuestion - 1)}>Voltar</button>
+              <button onClick={(event) => { event.preventDefault(); setCurrentQuestion(currentQuestion - 1); }}>Voltar</button>
             )}
             
             {currentQuestion !== totalPerguntas.current-1 && (
-              <button onClick={() => setCurrentQuestion(currentQuestion + 1)}>Próxima</button>
+              <button onClick={(event) => { event.preventDefault(); setCurrentQuestion(currentQuestion + 1); }}>Próxima</button>
             )}
             
             {currentQuestion === totalPerguntas.current-1 && (
