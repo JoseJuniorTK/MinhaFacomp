@@ -29,6 +29,12 @@ body {
     sans-serif;
 }
 
+.Radiobox{
+    display:flex;
+    margin-top:5em;
+    
+}
+
 .container {
   display: flex;
   justify-content: center;
@@ -39,11 +45,18 @@ body {
   border-radius: 30px;
 }
 
-.Botoes{
-    align-items: center;
-    flex-direction: row;
-    font-size: 90;
+.Botoes {
+  display: flex; /* Changed from font-size: 90 to display: flex */
+  justify-content: center; /* Center the buttons horizontally */
 }
+
+button[type="submit"],
+input[type="submit"] {
+  /* ... (other CSS styles) */
+  /* margin-left: 6em; */ /* Remove this line to center the buttons horizontally */
+  margin: 0 0.5em; /* Add this line to add some space between the buttons */
+}
+
 
 .loadingScreen {
   display: flex;
@@ -178,11 +191,18 @@ h2{
 
 button {
   display: block;
-  appearance: none;
   margin-top: 40px;
-  border: 1px solid #333;
   margin-bottom: 20px;
   text-transform: uppercase;
-  padding: 10px 20px;
   border-radius: 4px;
+  background: #4287f5;
+  color: white;
+  border: none;
+  padding: 20px;
+  font-size: 16px;
+  font-weight: 100;
+  letter-spacing: 3px;
+  border-radius: 30px;
+  width: 150px;
+  margin-left:4em;
 }
