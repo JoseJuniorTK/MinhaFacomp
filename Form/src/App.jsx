@@ -6,12 +6,6 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false); // New loading state
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const [inputValue, setInputValue] = useState('');
-
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
-  };
-
   const onSubmitMatricula = async (data) => {
     try {
       setIsLoading(true); // Set loading state to true
@@ -305,13 +299,8 @@ export default function App() {
   <h2>{listaPerguntas[currentQuestion].pergunta}</h2>
   {listaPerguntas[currentQuestion].caixa_de_texto ? (
     //<textarea name="caixaDeTexto" id="caixaDeTexto" cols="60" rows="10"></textarea>
-       <input
-          type="text"
-          placeholder="Escreva aqui"
-          {...register(`nivelSatisfacao${currentQuestion - 1}`)}
-          value={inputValue} // Set the value of the input field to the state variable
-          onChange={handleInputChange} // Update the state when the user types in the input field
-        />  ) : (
+    <input type="text" placeholder="Escreva aqui" {...register(`nivelSatisfacao${currentQuestion - 1}`)} />
+  ) : (
     <div className="Radiobox">
       {/* Use separate variables for radio input values */}
       {Array.from({ length: 10 }, (_, i) => i + 1).map(value => (
