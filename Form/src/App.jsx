@@ -6,6 +6,12 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false); // New loading state
   const { register, handleSubmit, formState: { errors } } = useForm();
 
+  const [inputValue, setInputValue] = useState('');
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
   const onSubmitMatricula = async (data) => {
     try {
       setIsLoading(true); // Set loading state to true
@@ -38,7 +44,7 @@ export default function App() {
     try {
       setIsLoading(true); // Set loading state to true
       const jsonString = JSON.stringify(data);
-      const url = `http://152.67.42.101:4008/listamatriculas?matricula=${jsonString}`;
+      const url = `http://152.67.42.101:4008/recebeform?form=${jsonString}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -48,12 +54,8 @@ export default function App() {
       const responseData = await response.json();
       // Do something with the response data
       console.log(responseData)
-
-      const dataArray = responseData.split(',').reverse();
-      setDisciplinas(dataArray);
-
-      // After successfully submitting matricula, move to the next question
       setCurrentQuestion(currentQuestion + 1);
+      // After successfully submitting matricula, move to the next question
     } catch (error) {
       // Handle error
     } finally {
@@ -68,7 +70,7 @@ export default function App() {
 
   const listaPerguntas = [
     {
-      categoria: 'Opina FACOMP',
+      categoria: 'Minha FACOMP',
       pergunta: 'Digite o seu número de matrícula:',
       caixa_de_texto: false,
     },
@@ -298,37 +300,28 @@ export default function App() {
         )}
 
         {currentQuestion >= 1 && currentQuestion < totalPerguntas.current && !isLoading && (
-          <form onSubmit={handleSubmit(onSubmitSatisfaction)}>
-            <h1>{listaPerguntas[currentQuestion].categoria}</h1>
-            <h2>{listaPerguntas[currentQuestion].pergunta}</h2>
-            {listaPerguntas[currentQuestion].caixa_de_texto ? (
-              //<textarea name="caixaDeTexto" id="caixaDeTexto" cols="60" rows="10"></textarea>
-              <input type="text" placeholder="Escreva aqui" {...register(`nivelSatisfacao${currentQuestion - 1}`)} />
-            ) : (
-              <div class="Radiobox">
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="1" />
-              <span>1</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="2" />
-              <span>2</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="3" />
-              <span>3</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="4" />
-              <span>4</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="5" />
-              <span>5</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="6" />
-              <span>6</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="7" />
-              <span>7</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="8" />
-              <span>8</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="9" />
-              <span>9</span>
-              <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value="10" />
-              <span>10</span>
-
-              </div>
-            )}
+<form onSubmit={handleSubmit(onSubmitSatisfaction)}>
+  <h1>{listaPerguntas[currentQuestion].categoria}</h1>
+  <h2>{listaPerguntas[currentQuestion].pergunta}</h2>
+  {listaPerguntas[currentQuestion].caixa_de_texto ? (
+    //<textarea name="caixaDeTexto" id="caixaDeTexto" cols="60" rows="10"></textarea>
+       <input
+          type="text"
+          placeholder="Escreva aqui"
+          {...register(`nivelSatisfacao${currentQuestion - 1}`)}
+          value={inputValue} // Set the value of the input field to the state variable
+          onChange={handleInputChange} // Update the state when the user types in the input field
+        />  ) : (
+    <div className="Radiobox">
+      {/* Use separate variables for radio input values */}
+      {Array.from({ length: 10 }, (_, i) => i + 1).map(value => (
+        <React.Fragment key={value}>
+          <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value={`${value}§${listaPerguntas[currentQuestion].pergunta}`} />
+          <span>{value}</span>
+        </React.Fragment>
+      ))}
+    </div>
+  )}
 
             <div className="Botoes">
             {currentQuestion !== 1 && (
