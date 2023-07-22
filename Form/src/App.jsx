@@ -27,12 +27,11 @@ export default function App() {
       // After successfully submitting matricula, move to the next question
       setCurrentQuestion(currentQuestion + 1);
     } catch (error) {
-      // Handle error
+      setErrorMessage(true);
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or error
     }
   };
-
 
   const onSubmitSatisfaction = async (data) => {
     try {
@@ -56,7 +55,6 @@ export default function App() {
       setIsLoading(false); // Set loading state to false regardless of success or error
     }
   };
-
 
   // ---- Código novo/alterado ----
 
@@ -270,6 +268,15 @@ export default function App() {
 
   //console.log(listaPerguntas)
 
+  const [disabled, setDisabled] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(false);
+
+  const thanksMessage = useRef(false);
+
+  if(currentQuestion == totalPerguntas.current){
+    thanksMessage.current = true;
+  };
+
   return (
       
     <>
@@ -278,13 +285,28 @@ export default function App() {
       </video>
 
       <div className="container">
+        {errorMessage && (
+          <div className='errorMessage'>
+            <h2>Você já preencheu a pesquisa ou sua matricula é inválida!</h2>
+            <button
+              onClick={(event) => {
+                event.preventDefault();
+                setCurrentQuestion(0);
+                setErrorMessage(false);
+              }}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
         {isLoading && (
           <div className="loadingScreen">
             <h2>Por favor, aguarde alguns segundos...</h2>
           </div>
         )}
 
-        {currentQuestion === 0 && !isLoading && (
+        {currentQuestion === 0 && !isLoading && !errorMessage && (
           <form onSubmit={handleSubmit(onSubmitMatricula)}>
             <h1>{listaPerguntas[0].categoria}</h1>
             <h2>{listaPerguntas[0].pergunta}</h2>
@@ -294,38 +316,75 @@ export default function App() {
         )}
 
         {currentQuestion >= 1 && currentQuestion < totalPerguntas.current && !isLoading && (
-<form onSubmit={handleSubmit(onSubmitSatisfaction)}>
-  <h1>{listaPerguntas[currentQuestion].categoria}</h1>
-  <h2>{listaPerguntas[currentQuestion].pergunta}</h2>
-  {listaPerguntas[currentQuestion].caixa_de_texto ? (
-    //<textarea name="caixaDeTexto" id="caixaDeTexto" cols="60" rows="10"></textarea>
-    <input type="text" placeholder="Escreva aqui" {...register(`nivelSatisfacao${currentQuestion - 1}`)} />
-  ) : (
-    <div className="Radiobox">
-      {/* Use separate variables for radio input values */}
-      {Array.from({ length: 10 }, (_, i) => i + 1).map(value => (
-        <React.Fragment key={value}>
-          <input {...register(`nivelSatisfacao${currentQuestion - 1}`)} type="radio" value={`${value}§${listaPerguntas[currentQuestion].pergunta}`} />
-          <span>{value}</span>
-        </React.Fragment>
-      ))}
-    </div>
-  )}
+          <form onSubmit={handleSubmit(onSubmitSatisfaction)}>
+            <h1>{listaPerguntas[currentQuestion].categoria}</h1>
+            <h2>{listaPerguntas[currentQuestion].pergunta}</h2>
+          {listaPerguntas[currentQuestion].caixa_de_texto ? (
+            //<textarea name="caixaDeTexto" id="caixaDeTexto" cols="60" rows="10"></textarea>
+            <input 
+              type="text" 
+              placeholder="Escreva aqui" 
+              {...register(`nivelSatisfacao${currentQuestion - 1}`)}
+              onChange={() => {
+                setDisabled(false);
+              }}
+            />
+          ) : (
+            <div className="Radiobox">
+              {/* Use separate variables for radio input values */}
+              {Array.from({ length: 10 }, (_, i) => i + 1).map(value => (
+                <div className='radioboxOptions'>
+                  <React.Fragment key={value}>
+                    <input
+                      {...register(`nivelSatisfacao${currentQuestion - 1}`)} 
+                      type="radio" 
+                      value={`${value}§${listaPerguntas[currentQuestion].pergunta}`}
+                      onClick={() => {
+                        setDisabled(false);
+                      }}
+                    />
+                    <span>{value}</span>
+                  </React.Fragment>
+                </div>
+              ))}
+            </div>)
+          }
 
             <div className="Botoes">
-            {currentQuestion !== 1 && (
-              <button onClick={(event) => { event.preventDefault(); setCurrentQuestion(currentQuestion - 1); }}>Voltar</button>
-            )}
-            
-            {currentQuestion !== totalPerguntas.current-1 && (
-              <button onClick={(event) => { event.preventDefault(); setCurrentQuestion(currentQuestion + 1); }}>Próxima</button>
-            )}
-            
-            {currentQuestion === totalPerguntas.current-1 && (
-              <input type="submit" value="Enviar" />
-            )}
+              {currentQuestion !== 1 && (
+                <button onClick={(event) => { event.preventDefault(); setCurrentQuestion(currentQuestion - 1); }}>Voltar</button>
+              )}
+              
+              {currentQuestion !== totalPerguntas.current-1 && (
+                <button 
+                  onClick={(event) => { 
+                    event.preventDefault(); 
+                    setCurrentQuestion(currentQuestion + 1);
+                    setDisabled(true); 
+                  }}
+                  disabled={disabled}
+                >
+                  Próxima
+                </button>
+              )}
+              
+              {currentQuestion === totalPerguntas.current-1 && (
+                <input
+                  type="submit"
+                  value="Enviar"
+                  disabled={disabled}
+                />
+              )}
             </div>
           </form>
+        )}
+
+        {thanksMessage.current && (
+          <div className='thanksMessage'>
+            <h1>
+              Obrigado por sua participação!
+            </h1>
+          </div>
         )}
       </div>
     </>
