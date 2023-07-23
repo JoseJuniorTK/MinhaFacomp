@@ -10,7 +10,7 @@ export default function App() {
     try {
       setIsLoading(true); // Set loading state to true
 
-      const url = `http://152.67.42.101:4008/listamatriculas?matricula=${data.matricula}`;
+      const url = `https://iarandu.com/listamatriculas?matricula=${data.matricula}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -37,7 +37,7 @@ export default function App() {
     try {
       setIsLoading(true); // Set loading state to true
       const jsonString = JSON.stringify(data);
-      const url = `http://152.67.42.101:4008/recebeform?form=${jsonString}`;
+      const url = `https://iarandu.com/recebeform?form=${jsonString}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -121,7 +121,7 @@ export default function App() {
     },
     {
       categoria: 'Pesquisa',
-      pergunta: 'Alguma vez você sentiu-se motivado a procurar um professor ou laboratório para iniciar uma pesquisa?',
+      pergunta: 'O quanto você se sentiu motivado a procurar um professor ou laboratório para iniciar uma pesquisa?',
       caixa_de_texto: false,
     },
     {
@@ -332,7 +332,7 @@ export default function App() {
           ) : (
             <div className="Radiobox">
               {/* Use separate variables for radio input values */}
-              {Array.from({ length: 10 }, (_, i) => i + 1).map(value => (
+              {Array.from({ length: 5 }, (_, i) => i + 1).map(value => (
                 <div className='radioboxOptions'>
                   <React.Fragment key={value}>
                     <input
